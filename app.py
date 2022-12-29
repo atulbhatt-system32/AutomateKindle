@@ -9,16 +9,35 @@ url ="https://dev.to/atulbhattsystem32/not-5-but-6-things-to-ask-before-joining-
 r = requests.get(url)
 html_content = r.text
 
-# Create a new epub book
-html = epub.EpubHtml(title='Webpage', file_name='input_file.html', lang='en')
-html.content = html_content
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(html_content, "html.parser")
+text = soup.get_text()
+
+
+
+# Create an ePUB book
 book = epub.EpubBook()
 
-book.add_item(html)
+# Set the metadata
+book.set_identifier("mybook")
 book.set_title("My Book")
 book.set_language("en")
 
-epub.write_epub("mybook.epub", book, {})
+
+# Create a chapter and add it to the book
+chapter = epub.EpubHtml(title="Chapter 1", file_name="ch1.html", lang="en")
+chapter.content = text
+book.add_item(chapter)
+
+# Add the book to the list of items
+book.spine = ['nav', chapter]
+
+# Write the ePUB file
+epub.write_epub("output.epub", book)
+
+
+# Send the file to kindle
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
