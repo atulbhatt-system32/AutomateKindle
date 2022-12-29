@@ -1,4 +1,4 @@
-#Kindle Webpage Automation
+# Kindle Webpage Automation
 
 Welcome to the Kindle Webpage Automation project! This project is designed to make it easy to send webpages straight to your Kindle device or reading app.
 
