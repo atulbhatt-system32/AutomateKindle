@@ -5,19 +5,47 @@ import os
 
 # Read a web page and fetch html content
 import requests
-url ="https://dev.to/atulbhattsystem32/not-5-but-6-things-to-ask-before-joining-a-new-organisation-if-youre-a-dev-or-sde-2a99"
+url ="https://the-soulful-entrepreneur.beehiiv.com/p/attention-new-oil"
 r = requests.get(url)
 html_content = r.text
 
 from bs4 import BeautifulSoup
 
 soup = BeautifulSoup(html_content, "html.parser")
-text = soup.get_text()
 
 
+# Find the heading of the page
+heading = soup.find("h1")
+#get heading content with the tags
+heading = str(heading)
+
+# Find all the text elements on the page
+text_elements = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li','img'])
+
+
+
+
+
+# Create a string to hold the text
+text = ""
 
 # Create an ePUB book
 book = epub.EpubBook()
+
+# Loop through the text elements and add them to the string
+for element in text_elements:
+    if element.name == "img":
+        img_url = element['src']
+        img_name = img_url.split("/")[-1]
+        img_data = requests.get(img_url).content
+        element['src'] = img_name
+
+        image = epub.EpubItem(file_name=img_name, content=img_data, media_type='image/jpeg')
+        book.add_item(image)
+
+
+    text += str(element)
+
 
 # Set the metadata
 book.set_identifier("mybook")
@@ -28,6 +56,9 @@ book.set_language("en")
 # Create a chapter and add it to the book
 chapter = epub.EpubHtml(title="Chapter 1", file_name="ch1.html", lang="en")
 chapter.content = text
+
+#preserve the new lines
+chapter.content = chapter.content.replace("\n", "<br/>")
 book.add_item(chapter)
 
 # Add the book to the list of items
@@ -86,8 +117,3 @@ server.quit()
 
 print("success")
 
-# LET's FIRE it's either a bug or success
-# LET's Try Again
-
-
-# In the next part we'll see how we can convert this epub to mobi format and send it to our kindle device.
